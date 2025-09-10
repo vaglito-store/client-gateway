@@ -15,9 +15,9 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { USER_SERVICE } from 'src/config';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Controller('users')
 export class UsersController {
@@ -43,15 +43,20 @@ export class UsersController {
     )
     id: number,
   ) {
-    try {
+    return this.usersClient.send({ cmd: 'find_one_user' }, { id }).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
+    /*     try {
       const product = await firstValueFrom(
         this.usersClient.send({ cmd: 'find_one_user' }, { id: id }),
       );
 
       return product;
     } catch (error) {
-      throw new BadRequestException(error);
-    }
+      throw new RpcException(error);
+    } */
   }
 
   @Patch(':id')
