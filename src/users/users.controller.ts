@@ -26,8 +26,8 @@ export class UsersController {
   ) {}
 
   @Post()
-  createUser() {
-    return 'Create user';
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersClient.send({ cmd: 'create_users' }, createUserDto);
   }
 
   @Get()
