@@ -68,7 +68,13 @@ export class UsersController {
     id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return `Update user with #${id} id`;
+    return this.usersClient
+      .send({ cmd: 'update_users' }, { id, ...updateUserDto })
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 
   @Delete(':id')
@@ -79,6 +85,10 @@ export class UsersController {
     )
     id: number,
   ) {
-    return `Delete user with #${id} id`;
+    return this.usersClient.send({ cmd: 'delete_users' }, { id }).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 }
